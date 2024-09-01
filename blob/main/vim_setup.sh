@@ -1,4 +1,6 @@
 #!/bin/bash
+# bash <(curl -s https://raw.githubusercontent.com/taylorsuccessor/vim_setup/main/vim_setup.sh)
+
 
 mkdir -p ~/.vim/colors
 
