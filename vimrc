@@ -582,6 +582,34 @@ nnoremap <leader>s :call SearchWithGrep()<CR>
 
 
 
+"_____________________________________________________________________________________html                                                                                                                                                 
+
+
+autocmd BufRead,BufNewFile *.twig,*.blade.php,*.html,*.htm set filetype=html
+
+autocmd FileType html syntax include @htmlSyntax syntax/html.vim
+
+
+augroup extended_html_syntax
+    autocmd!
+    autocmd BufRead,BufNewFile *.twig,*.blade.php,*.html,*.htm setlocal syntax=html
+    autocmd FileType html setlocal syntax=html
+augroup END
+
+
+function! HtmlColorSyntax()
+    syntax match HtmlColorHex "#\x\x\x\x\x\x" containedin=ALL
+    syntax match HtmlColorRgb "rgb(\s*\d\{1,3},\s*\d\{1,3},\s*\d\{1,3}\s*)" containedin=ALL
+
+    highlight HtmlColorHex ctermfg=Red guifg=#FF0000
+    highlight HtmlColorRgb ctermfg=Green guifg=#00FF00
+endfunction
+
+autocmd BufRead,BufNewFile *.twig,*.blade.php,*.html,*.htm call HtmlColorSyntax()
+
+
+"__________________________________________________________________________________END___html                                                                                                                                                 
+
 
 
 
