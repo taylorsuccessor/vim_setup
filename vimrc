@@ -339,8 +339,6 @@ nmap <leader>t <Plug>(python-mode-jump-back)
 
 
 
-
-" Function to find the last parent directory containing composer.json
 function! FindBaseDir()
     " Start from the directory of the current file
     let l:current_dir = expand('%:p:h')
@@ -352,13 +350,19 @@ function! FindBaseDir()
         if filereadable(l:current_dir . '/composer.json')
             " Update found_dir if composer.json is found
             let l:found_dir = l:current_dir
+            break
         endif
         
         " Move to the parent directory
         let l:current_dir = fnamemodify(l:current_dir, ':h')
     endwhile
+
+    " If composer.json was not found, prompt the user to enter a path
+    if empty(l:found_dir)
+        let l:found_dir = input('composer.json not found. Enter path: ', getcwd())
+    endif
     
-    " Return the last found directory or an empty string if none was found
+    " Return the found directory or an empty string if none was found
     return l:found_dir
 endfunction
 
