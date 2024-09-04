@@ -141,7 +141,15 @@ let NERDTreeWinSize=40
 nnoremap <leader>n :NERDTreeFocus<CR>
 "nnoremap <C-n> :NERDTree<CR>
 "nnoremap <C-t> :NERDTreeToggle<CR>
-nnoremap <C-t> :NERDTreeFind<CR>
+"nnoremap <C-t> :NERDTreeFind<CR>
+"nnoremap <C-t> :Lex %:h<CR>
+inoremap <c-t> <Esc>:Lex %:h<cr>
+nnoremap <c-t> <Esc>:Lex %:h<cr>
+let g:netrw_winsize = 20
+let g:netrw_liststyle = 3
+
+" to fix buf
+autocmd FileType netrw setl bufhidden=delete
 " Start NERDTree and put the cursor back in the other window.
 "autocmd VimEnter * NERDTree | wincmd p
 " Exit Vim if NERDTree is the only window left.
@@ -357,10 +365,6 @@ function! FindBaseDir()
         let l:current_dir = fnamemodify(l:current_dir, ':h')
     endwhile
 
-    " If composer.json was not found, prompt the user to enter a path
-    if empty(l:found_dir)
-        let l:found_dir = input('composer.json not found. Enter path: ', getcwd())
-    endif
     
     " Return the found directory or an empty string if none was found
     return l:found_dir
@@ -372,26 +376,30 @@ function! ConvertPsr4AndReplaceClassName()
     " Define the path to the autoload_psr4.php file
         " Get the base directory containing composer.json
     let l:base_dir = FindBaseDir()
-    echo l:base_dir
 
-    " Check if base_dir was found
-    if l:base_dir == ''
-        echo "Base directory with composer.json not found!"
-        return
+
+    if empty(l:base_dir)
+        let l:base_dir = input('composer.json not found. Enter path: ', getcwd())
     endif
+
 
     " Define the path to the autoload_psr4.php file
     let l:psr4_file = l:base_dir . '/vendor/composer/autoload_psr4.php'
-
+    let l:vendor_dir = l:base_dir.'/vendor'
 
     " Check if the file exists
     if !filereadable(l:psr4_file)
-        echo "PSR-4 file not found!"
-        return
+
+        let l:psr4_file = input('autoload_psr4.php not found. Enter path: ', l:psr4_file)
+        let l:vendor_dir = input(' Enter path for vendor : ', l:vendor_dir)
     endif
 
+    if !filereadable(l:psr4_file)
+        return SearchWithGrep(1)
+    endif
     " Read the file content into a list of lines
     let l:lines = readfile(l:psr4_file)
+
 
     " Initialize an empty dictionary to store the converted values
     let l:converted = {}
@@ -411,7 +419,7 @@ function! ConvertPsr4AndReplaceClassName()
 
                 let l:key_without_slash = substitute(l:key, '\\\\', '\\', 'g')
 
-                let l:value_without_vendor = substitute(l:value, '$vendorDir.''', 'vendor', 'g')
+                let l:value_without_vendor = substitute(l:value, '$vendorDir.''', l:vendor_dir, 'g')
                 let l:value_without_base = substitute(l:value_without_vendor, '\$baseDir\.''', l:base_dir, 'g')
                 let l:value_without_cot = substitute(l:value_without_base, '''', '\/', 'g')
 
@@ -466,6 +474,7 @@ function! ConvertPsr4AndReplaceClassName()
                     execute 'split ' . l:full_path_forward_slash
                 else
                     echo "File not found: " . l:full_path_forward_slash
+                   SearchWithGrep(1)
                 endif
         endfor
 
@@ -476,7 +485,6 @@ function! ConvertPsr4AndReplaceClassName()
 endfunction
 
 
-" Map the function to a key (e.g., <leader>c for "convert and replace class name")
 nnoremap <leader>c :call ConvertPsr4AndReplaceClassName()<CR>
 
 
@@ -506,22 +514,25 @@ endfunction
 
 
 
-function! SearchWithGrep()
-    " Get the word under the cursor
-    let l:word = expand('<cword>')
+function! SearchWithGrep(custom_search)
+    " Default values
+        let l:word = expand('<cword>')
+        let l:search_path = FindBaseDir()
+        let l:extension = expand('%:e')
 
-    " Define the search path using FindBaseDir() (replace with actual path if necessary)
-    let l:search_path = FindBaseDir()
-
-    " Get the file extension of the current buffer
-    let l:extension = expand('%:e')
+        let l:extension .= '.' . l:extension
+   
+    if a:custom_search == 1
+        let l:word = input('Search word: ', l:word)
+        let l:search_path = input('Search path: ', getcwd())
+        let l:extension = input('File extension (e.g., php): ', l:extension)
+    endif
 
     " Construct the grep command
-    let l:grep_command = 'grep -n -rHn -A 4 -B 4 ' . shellescape(l:word) . ' --exclude-dir=vendor --exclude-dir=.git --exclude-dir=node_modules --include=''*.' . l:extension . ''' '  . shellescape(l:search_path)
+    let l:grep_command = 'grep -rHni  -A 4 -B 4 ' . shellescape(l:word) . ' --exclude-dir=vendor --exclude-dir=.git --exclude-dir=node_modules --include=''*' . l:extension . ''' '  . shellescape(l:search_path)
     echo l:grep_command
 
     " Run the grep command and process the output with awk
-    "
     let l:grep_output = systemlist(l:grep_command)
     if v:shell_error
         echohl Error | echo "Grep command failed" | echohl None
@@ -530,57 +541,53 @@ function! SearchWithGrep()
 
     " Convert the grep output to the quickfix format
     let l:quickfix_list = []
-
     let l:searchFounded = 0
     let l:quickfix_entry = {}
     let l:text = ''
     let l:oneSearch_quickfix_entry = []
     for l:line in l:grep_output
-        if l:line =~ '\v\w+\.\w+-\d+-.*'
+        " Color the search term in the results
+        "let l:line = substitute(l:line, '\V\c' . escape(l:word, '\'), '\x01\=submatch(0)\x02', 'g')
 
+      "let l:line = substitute(l:line, l:word, '_____'.l:word.'________', 'g')
+
+        if l:line =~ '\v\w+\.\w+-\d+-.*'
             let l:matches = matchlist(l:line,  '\v(\w+\.\w+)-(\d+)-(.*)')
             if len(l:matches) >= 4 && !empty(l:matches[3])
                 let l:oneSearch_quickfix_entry += [{'filename': '', 'lnum': '', 'text': l:matches[3]}]
             endif
-
         elseif l:line =~ '\v\w+\.\w+:\d+:.*'
-            
             let l:searchFounded = 1
             let l:quickfix_entry = ParseLine(l:line)
             let l:oneSearch_quickfix_entry += [{'filename': '', 'lnum': '', 'text': l:quickfix_entry['text']}]
             let l:quickfix_list += [l:quickfix_entry]
-
         elseif l:line == '--'
-            
-
             let l:quickfix_list += l:oneSearch_quickfix_entry
-            let  l:oneSearch_quickfix_entry = []
+            let l:oneSearch_quickfix_entry = []
             let l:searchFounded = 0
-
         endif
-
-        "break
     endfor
 
-
-        if l:searchFounded == 1
-            let l:quickfix_list += l:oneSearch_quickfix_entry
-            let  l:oneSearch_quickfix_entry = []
-
-        endif
-
+    if l:searchFounded == 1
+        let l:quickfix_list += l:oneSearch_quickfix_entry
+        let l:oneSearch_quickfix_entry = []
+    endif
 
     " Set the quickfix list
     call setqflist(l:quickfix_list, 'r')
-    " tabnew
     " Open the quickfix window
     vsplit
-     copen
+    copen
+    execute 'match Search /' . l:word . '/'
 endfunction
 
-nnoremap <leader>s :call SearchWithGrep()<CR>
+" Map the function to a key
+nnoremap <leader>s :call SearchWithGrep(0)<CR>
+nnoremap <leader>cs :call SearchWithGrep(1)<CR>
 
-
+" search in project allfiles
+set nocompatible
+set path+=**
 
 "_____________________________________________________________________________________html                                                                                                                                                 
 
