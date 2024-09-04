@@ -8,8 +8,8 @@ curl -o ~/.vim/colors/wombat256mod.vim https://raw.githubusercontent.com/flazz/v
 
 mkdir -p ~/.vim/undodir
 
-if ! grep -q "taylorsuccessor" ~/.vimrc; then
-curl -o ~/.vimrc https://raw.githubusercontent.com/taylorsuccessor/vim_setup/main/vimrc
-fi
+curl -o ~/.custom_vimrc https://raw.githubusercontent.com/taylorsuccessor/vim_setup/main/vimrc
+
+echo 'source ~/.custom_vimrc' >> ~/.vimrc
 
 echo "Vim setup is complete!"
