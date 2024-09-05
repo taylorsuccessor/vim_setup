@@ -520,7 +520,7 @@ function! SearchWithGrep(custom_search)
         let l:search_path = FindBaseDir()
         let l:extension = expand('%:e')
 
-        let l:extension .= '.' . l:extension
+        let l:extension = '.' . l:extension
    
     if a:custom_search == 1
         let l:word = input('Search word: ', l:word)
