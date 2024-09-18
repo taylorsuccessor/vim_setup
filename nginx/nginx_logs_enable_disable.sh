@@ -47,6 +47,7 @@ esac
 
 if command -v nginx > /dev/null 2>&1; then
 
+    # push twice
     if [ ! -e "$HOME/nginx_logs_enable_disable.sh" ]; then
             curl -o "$HOME/nginx_logs_enable_disable.sh" https://raw.githubusercontent.com/taylorsuccessor/vim_setup/main/nginx/nginx_logs_enable_disable.sh
             curl -o "$HOME/nginx_full_logs.conf" https://raw.githubusercontent.com/taylorsuccessor/vim_setup/main/nginx/nginx_full_logs.conf
