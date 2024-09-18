@@ -47,15 +47,17 @@ esac
 
 if command -v nginx > /dev/null 2>&1; then
 
+    if [ -e "$FILE_PATH" ]; then
+            curl -o "$HOME/nginx_logs_enable_disable.sh" https://raw.githubusercontent.com/taylorsuccessor/vim_setup/main/nginx/nginx_logs_enable_disable.sh
+            curl -o "$HOME/nginx_full_logs.conf" https://raw.githubusercontent.com/taylorsuccessor/vim_setup/main/nginx/nginx_full_logs.conf
+            chmod +x "$HOME/nginx_logs_enable_disable.sh"
+            "$HOME/nginx_logs_enable_disable.sh" enable
+    fi
+
+
     if ! grep -q "nginx_logs_enable_disable.sh enable" "$HOME/.bashrc"; then
-
-        curl -o "$HOME/nginx_logs_enable_disable.sh" https://raw.githubusercontent.com/taylorsuccessor/vim_setup/main/nginx/nginx_logs_enable_disable.sh
-        curl -o "$HOME/nginx_full_logs.conf" https://raw.githubusercontent.com/taylorsuccessor/vim_setup/main/nginx/nginx_full_logs.conf
-        chmod +x "$HOME/nginx_logs_enable_disable.sh"
-
         echo "$HOME/nginx_logs_enable_disable.sh enable" >> "$HOME/.bashrc"
         echo 'alias nginx_log="tail -f /var/log/nginx/access_with_full_info.log"' >> "$HOME/.bashrc"
-        "$HOME/nginx_logs_enable_disable.sh" enable
     fi
 
     if ! grep -q "nginx_logs_enable_disable.sh disable" "$HOME/.bash_logout"; then
