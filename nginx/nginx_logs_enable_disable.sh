@@ -22,6 +22,7 @@ enable_logs() {
 disable_logs() {
     if [ -L "$ENABLED_LINK" ]; then
         sudo rm "$ENABLED_LINK"
+        sudo rm /var/log/nginx/access_with_full_info.log
 
         sudo systemctl reload nginx
         echo "Full logging disabled."
