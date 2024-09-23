@@ -621,3 +621,69 @@ autocmd BufRead,BufNewFile *.twig,*.blade.php,*.html,*.htm call HtmlColorSyntax(
 
 
 
+"__________________________________________________________________________________chat_gpt_and_api
+
+function! GetVisualText()
+      let l:save_reg = @"
+
+      let l:start_pos = getpos("'<")
+      let l:end_pos = getpos("'>")
+
+      let l:lines = getline(l:start_pos[1], l:end_pos[1])
+
+      if len(l:lines) == 1
+        let l:lines[0] = l:lines[0][l:start_pos[2] - 1 : l:end_pos[2] - 1]
+      else
+        let l:lines[0] = l:lines[0][l:start_pos[2] - 1 :]
+        let l:lines[-1] = l:lines[-1][: l:end_pos[2] - 1]
+      endif
+
+      let l:selected_text = join(l:lines, "\n")
+
+      let @" = l:save_reg
+
+      return l:selected_text
+endfunction
+
+
+
+function! SendToChatGPT()
+
+    let l:user_text = input("insert description for ChatGpt: ")
+    let l:selected_text = l:user_text . " " . GetVisualText()
+
+    let l:api_key = ""
+    let l:data = json_encode({ 'model': 'gpt-4', 'messages': [{'role': 'user', 'content': l:selected_text}] })
+    let l:curl_text = 'curl -s https://api.openai.com/v1/chat/completions -H "Content-Type: application/json" -H "Authorization: Bearer ' . l:api_key . '" -d ' . shellescape(l:data)
+    echo l:curl_text
+    let l:response = system(l:curl_text)
+
+    try
+        let l:parsed = json_decode(l:response)
+        let l:reply = l:parsed['choices'][0]['message']['content']
+    catch
+        echoerr "Error processing the API response"
+        return
+    endtry
+
+  tabnew
+    call setline(1, split(l:reply, "\n"))  " Insert the response line by line
+
+    " Step 6: Set buffer as 'not modified' and allow closing without saving
+    setlocal buftype=nofile
+    setlocal bufhidden=wipe
+    setlocal noswapfile
+
+    setlocal filetype=markdown
+
+    " if you want to replace response with selected text
+    "execute "normal! gv\"_c" . l:reply
+endfunction
+
+vnoremap <silent> <leader>ch :<C-u>call SendToChatGPT()<CR>
+
+"____________________________________________________________________________END______chat_gpt_and_api
+
+
+
+
