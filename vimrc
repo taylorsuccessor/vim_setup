@@ -1,3 +1,18 @@
+
+if !isdirectory(expand('~/.vim/undodir/'))
+    call mkdir(expand('~/.vim/undodir/'), 'p')
+endif
+
+if !isdirectory(expand('~/.vim/colors/'))
+    call mkdir(expand('~/.vim/colors/'), 'p')
+endif
+
+" Create the sessions directory if it doesn't exist
+if !isdirectory(expand('~/.vim/sessions/'))
+    call mkdir(expand('~/.vim/sessions/'), 'p')
+endif
+
+
 " taylorsuccessor
 "================================================debbuger python
 "let g:vimspector_base_dir='/Users/hashim.abdullah/.vim/bundle/vimspector'
@@ -686,4 +701,74 @@ vnoremap <silent> <leader>ch :<C-u>call SendToChatGPT()<CR>
 
 
 
+
+"______________________________________________________________________________________session
+
+"" Create the sessions directory if it doesn't exist
+"if !isdirectory(expand('~/.vim/sessions/'))
+"    call mkdir(expand('~/.vim/sessions/'), 'p')
+"endif
+"
+"autocmd VimLeave * execute 'mksession! ~/.vim/sessions/session_' . fnamemodify(expand('%'), ':t') . '.vim'
+"
+""if argc() == 0
+"autocmd VimEnter * execute 'source ~/.vim/sessions/session_' . fnamemodify(expand('%'), ':t') . '.vim'
+""endif
+
+" Automatically save session with date, time, and filename
+autocmd VimLeave * execute 'mksession! ~/.vim/sessions/session_99999auto_' . strftime('%Y-%m-%d_%H') . '_' . fnamemodify(expand('%'), ':t') . '.vim'
+
+function! SourceSession()
+    let l:sessions = split(glob('~/.vim/sessions/session_*.vim'), '\n')
+    if empty(l:sessions)
+        echo "No sessions found!"
+        return
+    endif
+
+   
+    let l:session_list = []
+    for l:session in l:sessions
+        call add(l:session_list, [l:session, fnamemodify(l:session, ':t')])
+    endfor
+
+    call sort(l:session_list, {a,b -> a[1] < b[1] ? -1 : 1})
+
+    " Limit to the newest ten sessions
+    let l:session_list = l:session_list[:10]
+
+    " Prepare a numbered list of sorted sessions
+    let l:numbered_choices = []
+    for l:i in range(len(l:session_list))
+        call add(l:numbered_choices, (l:i + 1) . ': ' . fnamemodify(l:session_list[l:i][0], ':t'))
+    endfor
+
+    " Display numbered list and get user choice
+    let l:choice = inputlist(l:numbered_choices)
+    if l:choice > 0 && l:choice <= len(l:session_list)
+        execute 'source' l:session_list[l:choice - 1][0]
+    else
+        echo "Invalid choice!"
+    endif
+endfunction
+
+
+
+if argc() == 0
+  autocmd VimEnter * call SourceSession()
+endif
+
+
+
+
+
+" Custom command to save session with an optional name
+function! SaveSession(name)
+    let l:session_name = a:name != '' ? a:name : fnamemodify(expand('%'), ':t')
+    let l:session_name ='session_' . strftime('%Y-%m-%d_%H-%M') . '_' . l:session_name  . '.vim' 
+    execute 'mksession! ~/.vim/sessions/'. l:session_name
+    echo "Session saved as:" . l:session_name
+endfunction
+
+command! -nargs=? SaveSession call SaveSession(<f-args>)
+"______________________________________________________________________________________session
 
