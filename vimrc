@@ -716,7 +716,7 @@ vnoremap <silent> <leader>ch :<C-u>call SendToChatGPT()<CR>
 ""endif
 
 " Automatically save session with date, time, and filename
-autocmd VimLeave * execute 'mksession! ~/.vim/sessions/session_99999auto_' . strftime('%Y-%m-%d_%H') . '_' . fnamemodify(expand('%'), ':t') . '.vim'
+autocmd VimLeave * execute 'mksession! ~/.vim/sessions/session_00000auto_' . strftime('%Y-%m-%d_%H') . '_' . fnamemodify(expand('%'), ':t') . '.vim'
 
 function! SourceSession()
     let l:sessions = split(glob('~/.vim/sessions/session_*.vim'), '\n')
@@ -731,7 +731,7 @@ function! SourceSession()
         call add(l:session_list, [l:session, fnamemodify(l:session, ':t')])
     endfor
 
-    call sort(l:session_list, {a,b -> a[1] < b[1] ? -1 : 1})
+    call sort(l:session_list, {a,b -> a[1] > b[1] ? -1 : 1})
 
     " Limit to the newest ten sessions
     let l:session_list = l:session_list[:10]
