@@ -17,20 +17,12 @@ cd $PROJECT_DIR
 # For example, if using raw GitHub URL for `index.php`:
 wget https://raw.githubusercontent.com/taylorsuccessor/vim_setup/main/sharing/index.php
 
-# Step 3: Set Permissions for Project Directory and Files
-echo "Setting permissions for the project directory..."
-sudo chown -R www-data:www-data $PROJECT_DIR
-sudo chmod -R 755 $PROJECT_DIR
-
 # Step 4: Create Required Directories for Sessions and Uploads
 echo "Creating directories for sessions and uploads..."
 SESSIONS_DIR="$PROJECT_DIR/sessions"
 
 sudo mkdir -p $SESSIONS_DIR
 
-# Set permissions for these directories
-sudo chown -R www-data:www-data  $SESSIONS_DIR
-sudo chmod -R 755  $SESSIONS_DIR
 
 # Step 5: Set up systemd service for PHP server to auto-restart if it fails
 echo "Creating systemd service to keep PHP server running..."
