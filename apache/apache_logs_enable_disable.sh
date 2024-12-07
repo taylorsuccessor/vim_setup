@@ -1,3 +1,13 @@
+to show php errors 
+
+1-
+use phpinfo(); to get the php.ini file that apache is using
+2- 
+display_errors = On
+
+
+
+=========================================================================
 1-
 sudo vim /etc/apache2/apache2.conf
 # add this line after last LogFormat 
