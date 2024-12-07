@@ -13,7 +13,7 @@ if [ ! -d "$PROJECT_DIR" ]; then
 fi
 
 sudo chown -R $USER:$USER $PROJECT_DIR
-sudo chmod -R 755 $PROJECT_DIR
+sudo chmod -R 777 $PROJECT_DIR
 
 cd $PROJECT_DIR
 
