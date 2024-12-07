@@ -11,8 +11,11 @@ PROJECT_DIR="/var/www/sharing"
 if [ ! -d "$PROJECT_DIR" ]; then
     sudo mkdir -p $PROJECT_DIR
 fi
-cd $PROJECT_DIR
+
+sudo chown -R $USER:$USER $PROJECT_DIR
 sudo chmod -R 755 $PROJECT_DIR
+
+cd $PROJECT_DIR
 
 # Download the project files from GitHub or other sources
 # For example, if using raw GitHub URL for `index.php`:
