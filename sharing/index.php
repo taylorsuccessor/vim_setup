@@ -1,4 +1,7 @@
 <?php
+
+error_reporting(E_ALL);        // Report all types of errors
+ini_set('display_errors', 1);  // Display errors in the browser
 // Default base directory for sessions
 $baseDir = __DIR__ . '/sessions/';
 $sessionsDir = __DIR__ . '/sessions/';
@@ -16,11 +19,6 @@ if (!is_dir($sessionDir)) mkdir($sessionDir, 0777, true);
 
 // Function to clear all session data, now restricted to session directory only
 function deleteDir($dir) {
-    // Prevent deleting directories outside of the session base
-    if (strpos(realpath($dir), realpath(__DIR__)) !== 0) {
-        echo "Error: Access to delete outside of the project directory is not allowed.";
-        return false;
-    }
 
     if (!is_dir($dir)) {
         return false; // Not a directory
@@ -55,13 +53,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['content'])) {
 
 // Handle file uploads with restriction to session directory only
 if (isset($_FILES['uploaded_file'])) {
-    // Prevent uploads outside the session directory
     $filePath = $sessionDir . basename($_FILES['uploaded_file']['name']);
-    
-    if (strpos(realpath($filePath), realpath($sessionDir)) !== 0) {
-        echo "Error: Cannot upload file outside the session directory.";
-        exit;
-    }
+   
 
     if (move_uploaded_file($_FILES['uploaded_file']['tmp_name'], $filePath)) {
         echo "File uploaded successfully.";
@@ -74,11 +67,7 @@ if (isset($_FILES['uploaded_file'])) {
 // Display the current file content or an empty editor if the file doesn't exist
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     // Only allow viewing files within the session directory
-    if (!is_file($textFile) || strpos(realpath($textFile), realpath($sessionDir)) !== 0) {
-        echo "Error: You cannot view files outside of the session directory.";
-        exit;
-    }
-    
+   
     $content = file_get_contents($textFile);
     ?>
     <!DOCTYPE html>
