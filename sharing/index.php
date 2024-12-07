@@ -1,23 +1,22 @@
 <?php
-
 error_reporting(E_ALL);        // Report all types of errors
 ini_set('display_errors', 1);  // Display errors in the browser
 // Default base directory for sessions
 $baseDir = __DIR__ . '/sessions/';
-$sessionsDir = __DIR__ . '/sessions/';
+$allSessionDir = __DIR__ . '/sessions/';
 
 // Ensure the base directory exists
 if (!is_dir($baseDir)) mkdir($baseDir, 0777, true);
+if (!is_dir($allSessionDir)) mkdir($allSessionDir, 0777, true);
 
 // Get the current session name
 $sessionName = isset($_GET['file']) ? basename($_GET['file']) : 'default';
 $sessionDir = $baseDir . $sessionName . '/';
 $textFile = $sessionDir . $sessionName . '.txt';
 
-// Ensure the session directory exists
+if (!is_dir($baseDir)) mkdir($baseDir, 0777, true);
 if (!is_dir($sessionDir)) mkdir($sessionDir, 0777, true);
 
-// Function to clear all session data, now restricted to session directory only
 function deleteDir($dir) {
 
     if (!is_dir($dir)) {
@@ -39,7 +38,7 @@ function deleteDir($dir) {
 
 // Handle "Clear All Data" action
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['clear_all'])) {
-    deleteDir($sessionsDir);
+    deleteDir($allSessionsDir);
     echo "All session data cleared.";
     exit;
 }
