@@ -38,7 +38,7 @@ function deleteDir($dir) {
 
 // Handle "Clear All Data" action
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['clear_all'])) {
-    deleteDir($allSessionsDir);
+    deleteDir($allSessionDir);
     echo "All session data cleared.";
     exit;
 }
