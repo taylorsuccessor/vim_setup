@@ -1,5 +1,6 @@
 #!/bin/bash
 # bash <(curl -s https://raw.githubusercontent.com/taylorsuccessor/vim_setup/main/vim_setup.sh)
+# bash <(curl -s https://raw.githubusercontent.com/taylorsuccessor/vim_setup/main/vim_setup_python.sh)
 # bash <(curl -s https://raw.githubusercontent.com/taylorsuccessor/vim_setup/main/nginx/nginx_logs_enable_disable.sh)
 
 
