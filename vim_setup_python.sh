@@ -28,6 +28,10 @@ nvm use --lts
 nvm alias default 'lts/*'
 
 # 🐍 Create Python virtual environment
+sudo apt install -y build-essential libssl-dev zlib1g-dev \
+  libbz2-dev libreadline-dev libsqlite3-dev libncursesw5-dev \
+  libffi-dev curl liblzma-dev
+
 echo "🐍 Creating Python virtualenv at $PYTHON_VENV_DIR"
 python3 -m venv "$PYTHON_VENV_DIR"
 source "$PYTHON_VENV_DIR/bin/activate"
