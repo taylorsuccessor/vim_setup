@@ -13,6 +13,19 @@ echo "⬇️ Cloning and building Neovim locally..."
 git clone https://github.com/neovim/neovim.git $NEOVIM_DIR
 cd $NEOVIM_DIR
 git checkout stable
+
+sudo apt update
+sudo apt install -y build-essential cmake  build-essential \
+  pkg-config \
+  libtool \
+  libtool-bin \
+  autoconf \
+  automake \
+  unzip \
+  curl \
+  doxygen
+
+
 make CMAKE_BUILD_TYPE=Release
 export MANPATH=$HOME/.local/share/man:$MANPATH
 make install DESTDIR=$HOME/.local PREFIX=$HOME/.local MANPREFIX=$HOME/.local/share/man
