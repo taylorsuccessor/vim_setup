@@ -23,12 +23,19 @@ sudo apt install -y build-essential cmake  build-essential \
   automake \
   unzip \
   curl \
-  doxygen
+  doxygen \
+  python3-venv python3-venv python3-pip ripgrep
 
 
 make CMAKE_BUILD_TYPE=Release
 export MANPATH=$HOME/.local/share/man:$MANPATH
-make install DESTDIR=$HOME/.local PREFIX=$HOME/.local MANPREFIX=$HOME/.local/share/man
+
+make install DESTDIR=$HOME/.local PREFIX=/usr/local MANPREFIX=/usr/local/share/man
+
+# 🔗 Ensure correct symlink for the Neovim binary
+mkdir -p ~/.local/bin
+ln -sf ~/.local/usr/local/bin/nvim ~/.local/bin/nvim
+
 
 cd ..
 
@@ -56,6 +63,7 @@ pip install black isort flake8 debugpy pynvim poetry
 
 # 🪝 Install vim-plug
 echo "🪝 Installing vim-plug..."
+mkdir -p /home/ubuntu/.local/share/nvim/site/autoload/
 curl -fLo ~/.local/share/nvim/site/autoload/plug.vim \
      https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 
