@@ -63,7 +63,7 @@ pip install black isort flake8 debugpy pynvim poetry
 
 # 🪝 Install vim-plug
 echo "🪝 Installing vim-plug..."
-mkdir -p /home/ubuntu/.local/share/nvim/site/autoload/
+mkdir -p ~/.local/share/nvim/site/autoload/
 curl -fLo ~/.local/share/nvim/site/autoload/plug.vim \
      https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 
