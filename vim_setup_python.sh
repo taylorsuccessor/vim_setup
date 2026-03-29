@@ -30,11 +30,12 @@ sudo apt install -y build-essential cmake  build-essential \
 make CMAKE_BUILD_TYPE=Release
 export MANPATH=$HOME/.local/share/man:$MANPATH
 
-make install DESTDIR=$HOME/.local PREFIX=/usr/local MANPREFIX=/usr/local/share/man
-
-# 🔗 Ensure correct symlink for the Neovim binary
-mkdir -p ~/.local/bin
-ln -sf ~/.local/usr/local/bin/nvim ~/.local/bin/nvim
+make install 
+#make install DESTDIR=$HOME/.local PREFIX=/usr/local MANPREFIX=/usr/local/share/man
+#
+## 🔗 Ensure correct symlink for the Neovim binary
+#mkdir -p ~/.local/bin
+#ln -sf ~/.local/usr/local/bin/nvim ~/.local/bin/nvim
 
 
 cd ..
